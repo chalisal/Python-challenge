@@ -1,89 +1,135 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jan 16 12:39:19 2024
+Created on Tue Jan 16 19:18:29 2024
 
 @author: chalisaoottamakorn
-"""
-
+"""#add our dependencies. 
 import os
 import csv
 
-#define variables
-total_months = 0
-total_net = 0
-net_change = []
-month_change = []
-total = 0
-greatest_increase = ["",99999]
-greatest_decrease = ["",0]
-previous_net = []
+#Assign a variable to laod a file from a path
+input_file = os.path.join(".", "Resources", "election_data.csv")
+# Assign a variable to save the file to a path
+output_file = os.path.join(".", "analysis", "election_analysis.txt")
 
-input_file = os.path.join(".", "Resources", "budget_data.csv")
-output_file = os.path.join(".", "analysis", "budget_analysis.txt")
+#Initialize a total vote counter. 
+total_votes = 0
+
+# Candidate Options
+candidate_options = []
+
+#Declare a dictionary
+candidate_votes = {}
+
+#Winning Candidate and Winning Count Tracker
+winning_candidate = []
+winning_candidate_summary = []
+winning_count = 0
+winning_percentage = 0
+election_results = []
+candidate_results = []
+
+#Open the election results and read the file. 
+with open(input_file) as election_data:
+
+    #To do: read and analyze data here
+    #Read the file object with reader function. 
+    file_reader = csv.reader(election_data)
+
 
 #open and read csv
 with open(input_file) as input_csv:
     csv_reader = csv.reader(input_csv)
     
+
+
     #Read the header row first
     header = next(csv_reader)
     first = next(csv_reader)
-    total_months = total_months + 1
-    total_net += int(first[1])
-    previous = int(first[1])    
-  
+    total_votes = total_votes + 1
     
-    
-    for x in csv_reader:
-        total_months = total_months + 1
-        total_net += int(x[1])
-        change = int(x[1]) - int(previous_net)
-        net_change += [change] 
-        month = (x[0])
-        previous_net = int(x[1])
-                  
-                                
+    #Print each row in the CSV file. 
+    for row in csv_reader:
+        #Add to the total vote count. 
+        total_votes += 1
         
-    # find revenue change
-    revenue_change = []
+        #Print the candidate name from each row. 
+        candidate_name = row[2]
 
-    #calculate the greatest increase
-    if net_change  > greatest_increase[1]:
-        greatest_increase[0] = row[0]
-        greatest_increase[1] = net_change
-    
-    #calculate the greatest decrease
-    if net_change < greatest_decrease[1]:
-        greatest_decrease[0] = row[0]
-        greatest_decrease[1] = net_change
+        #If the candidate does not match any existing candidate. 
+        if candidate_name not in candidate_options: 
+            #Add it to the list of candidates. 
+            candidate_options.append(candidate_name)
+            #Begin tracking that candidates vote count. 
+            candidate_votes[candidate_name] = 0
         
-average_change = sum(net_change)/len(net_change)
+        #Add a vote to that candidate's count. 
+        candidate_votes[candidate_name] += 1
+        #Print each candidates voter count & % to terminal. 
+        print(candidate_results)
+
+        
+
+    print(election_results, end="")
+
+
+    for candidate_name in candidate_votes: 
+        #Retrieve vote count of a candidate. 
+        votes = candidate_votes[candidate_name]
+        #Calculate the percentage of votes. 
+        vote_percentage = float(votes) / float(total_votes) * 100
+ 
+     
+
+        #Determine if the votes is greater than winning count. 
+        if (votes > winning_count) and (vote_percentage > winning_percentage): 
+            #If true then set winning_count = votes & winning_percent = vote_percentage
+            winning_count = votes
+            winning_percentage = vote_percentage
+            #And, set the winning_cand equal to the candidate's name. 
+            winning_candidate = candidate_name
+
+     
+
+    print(winning_candidate_summary)
 
 with open(output_file,"w") as output_txt:
         
+        
+        
+        
+#Print Output and Add to Output
     output = (
-       f"Financial Analysis\n"
-       f"--------------------------------------\n"
-       f"Total Months: {total_months}\n"
-       f"Total: {total_net}\n"
-       f"Average Change: ${average_change}\n"
-       f"Greatest Increase in Profits: {greatest_increase[0]} {greatest_increase[1]}\n"
-       f"Greatest Decrease in Profits: {greatest_increase[0]} {greatest_increase[1]}\n"
-       )
+        f"Election Results\n"
+        f"-----------------------------------------------\n"
+        f"Total Votes: {total_votes}\n"
+        f"------------------------------------------------\n"
+        f"{candidate_name}: {vote_percentage:.1f}% ({votes:,})\n"
+        f"Winner:{winning_candidate}\n"
+        f"Winning Percentage: {winning_percentage:.1f}%\n"
+        f"------------------------------------------------\n")
+        
+    
     print(output)
     output_txt.write(output)
+
+
     
-    #Find the total number of months included in the dataset
-    #Find the net total amount of "Profit/Losses" over the entire period
-    #Find the changes in "Profit/Losses" over the entire period, and then the average of those changes
-    #Find the greatest increase in profits (date and amount) over the entire period
-    #Find the greatest decrease in profits (date and amount) over the entire period
-    
-#     Financial Analysis
-# ----------------------------
-# Total Months: 86
-# Total: $22564198
-# Average Change: $-8311.11
-# Greatest Increase in Profits: Aug-16 ($1862002)
-# Greatest Decrease in Profits: Feb-14 ($-1825558)
+# The total number of votes cast
+# A complete list of candidates who received votes
+# The percentage of votes each candidate won
+# The total number of votes each candidate won
+# The winner of the election based on popular vote
+
+
+# Election Results
+# -------------------------
+# Total Votes: 369711
+# -------------------------
+# Charles Casper Stockham: 23.049% (85213)
+# Diana DeGette: 73.812% (272892)
+# Raymon Anthony Doane: 3.139% (11606)
+# -------------------------
+# Winner: Diana DeGette
+# -------------------------
